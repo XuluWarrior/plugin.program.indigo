@@ -16,7 +16,7 @@ import freshstart
 import installer
 import maintool
 
-import xbmc
+import xbmc, xbmcvfs
 import xbmcgui
 import xbmcplugin
 # from libs import requests
@@ -37,25 +37,25 @@ except:
 
 addon_id = kodi.addon_id
 addon = (addon_id, sys.argv)
-artwork = xbmc.translatePath(os.path.join('special://home', 'addons', addon_id, 'art/'))
+artwork = kodi.translate_path(os.path.join('special://home', 'addons', addon_id, 'art/'))
 AddonTitle = kodi.addon.getAddonInfo('name')
-addon_path = xbmc.translatePath(os.path.join('special://home', 'addons', addon_id))
-packagepath = xbmc.translatePath(os.path.join('special://home', 'addons', 'packages'))
-ART = xbmc.translatePath(os.path.join('special://home', 'addons', addon_id, 'art/'))
-ART2 = xbmc.translatePath(os.path.join('special://home', 'addons', addon_id, 'art2/'))
-ART3 = xbmc.translatePath(os.path.join('special://home', 'addons', addon_id, 'art3/'))
+addon_path = kodi.translate_path(os.path.join('special://home', 'addons', addon_id))
+packagepath = kodi.translate_path(os.path.join('special://home', 'addons', 'packages'))
+ART = kodi.translate_path(os.path.join('special://home', 'addons', addon_id, 'art/'))
+ART2 = kodi.translate_path(os.path.join('special://home', 'addons', addon_id, 'art2/'))
+ART3 = kodi.translate_path(os.path.join('special://home', 'addons', addon_id, 'art3/'))
 fanart = artwork+'fanart.jpg'
-messages = xbmc.translatePath(os.path.join('special://home', 'addons', addon_id, 'resources', 'messages/'))
+messages = kodi.translate_path(os.path.join('special://home', 'addons', addon_id, 'resources', 'messages/'))
 execute = xbmc.executebuiltin
-hubpath = xbmc.translatePath(os.path.join('special://home', 'addons', 'repository.xbmchub'))
-uploaderpath = xbmc.translatePath(os.path.join('special://home', 'addons', 'script.tvaddons.debug.log'))
+hubpath = kodi.translate_path(os.path.join('special://home', 'addons', 'repository.xbmchub'))
+uploaderpath = kodi.translate_path(os.path.join('special://home', 'addons', 'script.tvaddons.debug.log'))
 
-oldinstaller = xbmc.translatePath(os.path.join('special://home', 'addons', 'plugin.program.addoninstaller'))
-oldnotify = xbmc.translatePath(os.path.join('special://home', 'addons', 'plugin.program.xbmchub.notifications'))
-oldmain = xbmc.translatePath(os.path.join('special://home', 'addons', 'plugin.video.xbmchubmaintenance'))
-oldwiz = xbmc.translatePath(os.path.join('special://home', 'addons', 'plugin.video.hubwizard'))
-oldfresh = xbmc.translatePath(os.path.join('special://home', 'addons', 'plugin.video.freshstart'))
-oldmain2 = xbmc.translatePath(os.path.join('special://home', 'addons', 'plugin.video.hubmaintenance'))
+oldinstaller = kodi.translate_path(os.path.join('special://home', 'addons', 'plugin.program.addoninstaller'))
+oldnotify = kodi.translate_path(os.path.join('special://home', 'addons', 'plugin.program.xbmchub.notifications'))
+oldmain = kodi.translate_path(os.path.join('special://home', 'addons', 'plugin.video.xbmchubmaintenance'))
+oldwiz = kodi.translate_path(os.path.join('special://home', 'addons', 'plugin.video.hubwizard'))
+oldfresh = kodi.translate_path(os.path.join('special://home', 'addons', 'plugin.video.freshstart'))
+oldmain2 = kodi.translate_path(os.path.join('special://home', 'addons', 'plugin.video.hubmaintenance'))
 
 
 def get_kversion():
@@ -85,7 +85,7 @@ def main_menu():
     dp = xbmcgui.DialogProgress()
     try:
         if (not os.path.exists(ART)) or (not os.path.exists(ART2)) or (not os.path.exists(ART3)):
-            dp.create(AddonTitle, 'Getting ' + AddonTitle + ' Ready......', 'Downloading ' + AddonTitle + ' Icons.....')
+            dp.create(AddonTitle, 'Getting ' + AddonTitle + ' Ready......\nDownloading ' + AddonTitle + ' Icons.....')
             dp.update(0)
             icons_zip = os.path.join(packagepath, AddonTitle + '_icons.zip')
             downloader.download(kodi.read_file('http://indigo.tvaddons.co/graphics/arts.txt'), icons_zip, dp)
@@ -245,7 +245,7 @@ def toggle_notify():
         status = 'Enabled'
     confirm = xbmcgui.Dialog()
     if confirm.yesno('Community Notifications',
-                     'Please confirm that you wish to %s of community notifications!' % option, " "):
+                     'Please confirm that you wish to %s of community notifications!' % option+ "\n"):
         if status == 'Enabled':
             kodi.set_setting('notifications-on-startup', "false")
         else:
@@ -264,7 +264,7 @@ def system_info():
     gateway = xbmc.getInfoLabel('Network.GatewayAddress')
     ipaddy = xbmc.getInfoLabel('Network.IPAddress')
     linkstate = xbmc.getInfoLabel('Network.LinkState').replace("Link:", "")
-    freespace, totalspace = maintool.get_free_space_mb(os.path.join(xbmc.translatePath('special://home')))
+    freespace, totalspace = maintool.get_free_space_mb(os.path.join(kodi.translate_path('special://home')))
     freespace = maintool.convert_size(freespace)
     totalspace = maintool.convert_size(totalspace)
     screenres = xbmc.getInfoLabel('system.screenresolution')

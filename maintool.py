@@ -12,21 +12,21 @@ from libs import viewsetter
 addon_id = kodi.addon_id
 addon = (addon_id, sys.argv)
 AddonName = kodi.addon.getAddonInfo('name') + " for Kodi"
-artwork = xbmc.translatePath(os.path.join('special://home', 'addons', addon_id, 'art/'))
+artwork = kodi.translate_path(os.path.join('special://home', 'addons', addon_id, 'art/'))
 fanart = artwork + 'fanart.jpg'
-messages = xbmc.translatePath(os.path.join('special://home', 'addons', addon_id, 'resources', 'messages/'))
+messages = kodi.translate_path(os.path.join('special://home', 'addons', addon_id, 'resources', 'messages/'))
 execute = xbmc.executebuiltin
 dp = xbmcgui.DialogProgress()
 dialog = xbmcgui.Dialog()
 
-userdata_path = xbmc.translatePath('special://userdata/')
-database_path = xbmc.translatePath('special://userdata/Database')
-addon_data = xbmc.translatePath('special://userdata/addon_data')
-thumbnail_path = xbmc.translatePath('special://userdata/Thumbnails')
-cache_path = os.path.join(xbmc.translatePath('special://home'), 'cache')
-temp_path = os.path.join(xbmc.translatePath('special://home'), 'temp')
-addons_path = os.path.join(xbmc.translatePath('special://home'), 'addons')
-packages_path = os.path.join(xbmc.translatePath('special://home/addons'), 'packages')
+userdata_path = kodi.translate_path('special://userdata/')
+database_path = kodi.translate_path('special://userdata/Database')
+addon_data = kodi.translate_path('special://userdata/addon_data')
+thumbnail_path = kodi.translate_path('special://userdata/Thumbnails')
+cache_path = os.path.join(kodi.translate_path('special://home'), 'cache')
+temp_path = os.path.join(kodi.translate_path('special://home'), 'temp')
+addons_path = os.path.join(kodi.translate_path('special://home'), 'addons')
+packages_path = os.path.join(kodi.translate_path('special://home/addons'), 'packages')
 
 
 def tool_menu():
@@ -118,9 +118,9 @@ def tool_menu():
 def delete_cache(auto_clear=False):
     if not auto_clear:
         if not xbmcgui.Dialog().yesno("Please Confirm",
-                                      "                        Please confirm that you wish to clear",
+                                      "                        Please confirm that you wish to clear\n"+\
                                       "                              your Kodi application cache!",
-                                      "                             ", "Cancel", "Clear"):
+                                      "Cancel", "Clear"):
             return
     cache_paths = [cache_path, temp_path]
     if xbmc.getCondVisibility('system.platform.ATV2'):
@@ -152,7 +152,7 @@ def delete_cache(auto_clear=False):
 
 def delete_thumbnails(auto_clear=False):
     if not auto_clear:
-        if not xbmcgui.Dialog().yesno("Delete Thumbnails", "This option deletes all thumbnails",
+        if not xbmcgui.Dialog().yesno("Delete Thumbnails", "This option deletes all thumbnails\n"+\
                                       "Are you sure you want to do this?"):
             return
     status = 'have been'
@@ -174,7 +174,7 @@ def delete_packages(auto_clear=False):
     if not auto_clear:
         if not xbmcgui.Dialog().yesno('Delete Packages', "Delete Package Cache Files?"):
             return
-    for root, dirs, files in os.walk(xbmc.translatePath('special://home/addons/packages')):
+    for root, dirs, files in os.walk(kodi.translate_path('special://home/addons/packages')):
         try:
             for f in files:
                 os.unlink(os.path.join(root, f))
@@ -189,11 +189,11 @@ def delete_packages(auto_clear=False):
 
 def delete_crash_logs(auto_clear=False):
     if not auto_clear:
-        if not xbmcgui.Dialog().yesno(AddonName, 'Delete Crash Logs', "Do you want to delete old crash logs?"):
+        if not xbmcgui.Dialog().yesno(AddonName, 'Delete Crash Logs\nDo you want to delete old crash logs?'):
             return
-    cache_directories = (xbmc.translatePath('special://home'),
-                         os.path.join(xbmc.translatePath('special://home'), 'cache'),
-                         xbmc.translatePath('special://temp'))
+    cache_directories = (kodi.translate_path('special://home'),
+                         os.path.join(kodi.translate_path('special://home'), 'cache'),
+                         kodi.translate_path('special://temp'))
     for cache_directory in cache_directories:
         if os.path.exists(cache_directory):
             file_types = ('*.dmp', '*.txt')
@@ -206,7 +206,7 @@ def delete_crash_logs(auto_clear=False):
 
 
 def delete_textures():
-    if not xbmcgui.Dialog().yesno(AddonName, 'Delete Textures13 Database', "Do you want to delete the Database?"):
+    if not xbmcgui.Dialog().yesno(AddonName, 'Delete Textures13 Database\nDo you want to delete the Database?'):
         return
     status = "has been"
     try:
@@ -221,8 +221,8 @@ def delete_textures():
 def wipe_addons():
     # kodi.log_info('WIPE ADDONS ACTIVATED')
     if xbmcgui.Dialog().yesno("Please Confirm",
-                              "                     Please confirm that you wish to uninstall",
-                              "                              all addons from your device!",
+                              "                     Please confirm that you wish to uninstall\n"+\
+                              "                              all addons from your device!\n"+\
                               "              ", nolabel='Cancel', yeslabel='Uninstall'):
         try:
             for root, dirs, files in os.walk(addons_path, topdown=False):
@@ -239,7 +239,8 @@ def wipe_addons():
         except Exception as e:
             kodi.log(str(e))
             xbmcgui.Dialog().ok(AddonName, "Error Wiping Addons please visit TVADDONS.CO forums")
-
+    else:
+        return
 
 def debug_toggle():
     xbmc.executebuiltin("ToggleDebug")
@@ -276,7 +277,7 @@ def auto_weekly_clean_on_off():
         if xbmcgui.Dialog().yesno(AddonName, 'Please confirm that you wish to enable weekly automated maintenance.'):
             kodi.set_setting("clearday", datetime.datetime.today().weekday())
             kodi.open_settings(addon_id, id1=5, id2=3)
-            available_space, total_space = get_free_space_mb(xbmc.translatePath('special://home'))
+            available_space, total_space = get_free_space_mb(kodi.translate_path('special://home'))
             if str(available_space) == '0 B Free' and str(total_space) == '0 B Total':
                 xbmcgui.Dialog().ok('Auto Maintenance Error',
                                     'Auto Maintenance encountered a problem and can not be run',
@@ -305,7 +306,7 @@ def auto_clean(auto_clear=False):
         if not xbmcgui.Dialog().yesno(AddonName, 'Selecting Yes runs maintenance based on your settings.',
                                       'Do you wish to continue?', yeslabel='Yes', nolabel='No'):
             return
-    available_space, total_space = get_free_space_mb(xbmc.translatePath('special://home'))
+    available_space, total_space = get_free_space_mb(kodi.translate_path('special://home'))
     err_default = (0, '0 B', '0M', '0 MB', '0 MB Free', '0 MB Total', '0M Free', '0M Total')
     if str(available_space) in err_default or str(total_space) in err_default:
         if not auto_clear:

@@ -130,7 +130,7 @@ class Viewer(xbmcgui.WindowXML):
             if mode == 'nocoin':
                 self.path = path
             else:
-                if xbmc.translatePath('special://logpath') not in self.path:
+                if kodi.translate_path('special://logpath') not in self.path:
                     self.path = get_logpath()
                 if '.old.log' in self.path:
                     self.path = self.path.replace('.old.log', '.log')
@@ -145,7 +145,7 @@ class Viewer(xbmcgui.WindowXML):
                 if 'nocoin.log' in path:
                     self.path = path.replace('nocoin.log', 'nocoin_error.log')
             else:
-                if xbmc.translatePath('special://logpath') not in self.path:
+                if kodi.translate_path('special://logpath') not in self.path:
                     self.path = get_logpath()
                 if '.old.log' not in self.path:
                     self.path = self.path.replace('.log', '.old.log')
@@ -217,9 +217,9 @@ def get_logpath():        # global path
         # path = ''
         # content = ''
     logfile_name = xbmc.getInfoLabel('System.FriendlyName').split()[0].lower()
-    l_path = os.path.join(xbmc.translatePath('special://logpath'), logfile_name + '.log')
+    l_path = os.path.join(kodi.translate_path('special://logpath'), logfile_name + '.log')
     if not os.path.isfile(l_path):
-        l_path = os.path.join(xbmc.translatePath('special://logpath'), 'kodi.log')
+        l_path = os.path.join(kodi.translate_path('special://logpath'), 'kodi.log')
         if not os.path.isfile(l_path):
             pass
     return l_path

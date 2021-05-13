@@ -1,5 +1,5 @@
 import os
-import re
+import re, sys
 import base64
 import datetime
 import shutil
@@ -18,8 +18,8 @@ from libs import kodi
 #     from urllib2 import urlopen, Request  # python 2.x
 
 addon_id = xbmcaddon.Addon().getAddonInfo('id')
-profile_path = os.path.join(xbmc.translatePath('special://profile/'), 'addon_data/', addon_id)
-addons_path = os.path.join(xbmc.translatePath('special://home/'), 'addons/')
+profile_path = os.path.join(kodi.translate_path('special://profile/'), 'addon_data/', addon_id)
+addons_path = os.path.join(kodi.translate_path('special://home/'), 'addons/')
 log_file = os.path.join(profile_path, 'nocoin.log')
 error_log_file = os.path.join(profile_path, 'nocoin_error.log')
 setting = xbmcaddon.Addon().getSetting
@@ -74,6 +74,8 @@ def file_check(file_path, file_name, main_directory, definitions, _totals_, zip_
                 try:
                     if base64.b64encode(base64.b64decode(text)) == text:
                         decoded_text = base64.b64decode(text)
+                        if sys.version_info >= (3,0,0):
+                            decoded_text = decoded_text.decode(encoding='utf-8', errors='strict')
                         if decoded_text:
                             source_file_decoded.append(decoded_text)
                 except TypeError:
@@ -179,7 +181,7 @@ def nocoin():
     if os.path.exists(error_log_file):
             os.remove(error_log_file)
     definitions = get_definitions()
-    directories = [xbmc.translatePath('special://home/')] if setting('scan_default_dir') == 'true' else []
+    directories = [kodi.translate_path('special://home/')] if setting('scan_default_dir') == 'true' else []
     if setting('scan_warning') == 'true':
         for numb in range(0, 7):
             scan_dir = xbmcaddon.Addon().getSetting('scan_dir' + str(numb))
@@ -193,7 +195,7 @@ def nocoin():
                 main_file_path = os.path.join(main_directory, main_file_name)
                 # if called from service or auto run, skip dp reporting
                 percent = 100 * fz_count / f_count if 100 * fz_count / f_count >= 0 else 0
-                dp.update(int(percent), os.path.dirname(main_file_path), main_file_name,
+                dp.update(int(percent), os.path.dirname(main_file_path)+'\n'+main_file_name+'\n'+\
                           '%s of %s    %s%%' % (fz_count, f_count, percent))
                 if dp.iscanceled():
                     dp.close()
@@ -246,34 +248,34 @@ def nc_options(nc_path):
             if i_addon == 'Unknown':
                 action = dialog.select(i_file, ['Take No Action', ' Delete file'])
                 if action == 1 and os.path.isfile(i_path):
-                    if dialog.yesno('Delete File', 'Please Confirm that you want to Delete', i_path):
+                    if dialog.yesno('Delete File', 'Please Confirm that you want to Delete\n'+ i_path):
                         os.remove(i_path)
                         status = 'Could not remove file' if os.path.isfile(i_path) else 'File has been removed'
                         dialog.ok('Delete File', i_path, status)
             else:
                 action = dialog.select(i_addon, ['Take No Action', 'Disable', 'Uninstall'])
                 if action == 1:
-                    if dialog.yesno('Disable', 'Please Confirm that you want to Disable', i_addon):
+                    if dialog.yesno('Disable', 'Please Confirm that you want to Disable\n'+ i_addon):
                         xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","id":7,"params":'
                                             '{"addonid": "%s","enabled":false}}' % i_addon)
                         status = 'Could not Disable addon' if xbmc.getCondVisibility("System.HasAddon(%s)" % i_addon) \
                             else 'Addon is Disabled'
                         dialog.ok('Disable', i_addon, status)
                 elif action == 2:
-                    if dialog.yesno('Uninstall Addon', 'Please Confirm that you want to Uninstall', i_addon):
+                    if dialog.yesno('Uninstall Addon', 'Please Confirm that you want to Uninstall\n'+ i_addon):
                         shutil.rmtree(addons_path + i_addon)
                         status = 'Could not Uninstall addon' if os.path.isdir(addons_path + i_addon) \
                             else 'addon has been Uninstalled'
                         dialog.ok('Uninstall Addon', addons_path + i_addon, status)
                         if os.path.isdir(profile_path + i_addon):
-                            if dialog.yesno('Uninstall Userdata', 'Please Confirm that you also want to Remove the ',
+                            if dialog.yesno('Uninstall Userdata', 'Please Confirm that you also want to Remove the \n'+\
                                             i_addon + ' Userdata/addon_data folder'):
                                 shutil.rmtree(profile_path + i_addon)
                                 status = 'Could not Remove Addons Userdata' if os.path.isdir(profile_path + i_addon) \
                                     else 'Addons Userdata has been Removed'
                                 dialog.ok('Uninstall Userdata', profile_path + i_addon, status)
                         if os.path.isfile(i_path):
-                            if dialog.yesno('Uninstall File', 'Please Confirm that you also want to Remove ', i_file):
+                            if dialog.yesno('Uninstall File', 'Please Confirm that you also want to Remove \n'+ i_file):
                                 os.remove(i_path)
                                 status = 'Could not Remove ' + i_file if os.path.isfile(i_path) \
                                     else i_file + ' has been Removed'

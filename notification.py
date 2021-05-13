@@ -149,7 +149,7 @@ def art(f, fe=''):
             f = f.replace(ext, '')
             fe = ext
             break
-    return xbmc.translatePath(addon_path(f + fe))
+    return kodi.translate_path(addon_path(f + fe))
 
 
 def artp(f, fe='.png'):
@@ -162,7 +162,7 @@ def artj(f, fe='.jpg'):
 
 def addon_path(f, fe=''):
     path = settings.getAddonInfo('path')
-    return xbmc.translatePath(os.path.join(path, f + fe))
+    return kodi.translate_path(os.path.join(path, f + fe))
 
 
 def check_news2(message_type, override_service=False):

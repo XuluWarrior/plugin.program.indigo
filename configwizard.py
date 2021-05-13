@@ -4,9 +4,9 @@ import extract
 import os
 import re
 import sys
-import urllib
+#import urllib
 
-import xbmc
+import xbmc, xbmcvfs
 import xbmcgui
 import xbmcplugin
 
@@ -32,12 +32,12 @@ def HELPWIZARD(name, url, description, filetype):
     # path = xbmc.translatePath(os.path.join('special://home', 'addons', 'packages'))
     filetype = filetype.lower()
     if xbmcgui.Dialog().yesno("Please Confirm",
-                              "                Please confirm that you wish to automatically",
+                              "                Please confirm that you wish to automatically\n"+\
                               "            configure Kodi with all the best addons and tweaks!",
-                              "              ", "Cancel", "Install"):
-        path = xbmc.translatePath(os.path.join('special://home', 'addons', 'packages'))
+                              "Cancel", "Install"):
+        path = kodi.translate_path(os.path.join('special://home', 'addons', 'packages'))
         dp = xbmcgui.DialogProgress()
-        dp.create(AddonTitle, " ", 'Downloading and Configuring ', 'Please Wait')
+        dp.create(AddonTitle, '\nDownloading and Configuring\nPlease Wait')
         lib = os.path.join(path, name + '.zip')
         try:
             os.remove(lib)
@@ -59,9 +59,9 @@ def HELPWIZARD(name, url, description, filetype):
         if not os.path.exists(lib):
             return
         if filetype == 'main':
-            addonfolder = xbmc.translatePath('special://home')
+            addonfolder = kodi.translate_path('special://home')
         elif filetype == 'addon':
-            addonfolder = xbmc.translatePath(os.path.join('special://home', 'addons'))
+            addonfolder = kodi.translate_path(os.path.join('special://home', 'addons'))
         else:
             print({'filetype': filetype})
             dialog = xbmcgui.Dialog()

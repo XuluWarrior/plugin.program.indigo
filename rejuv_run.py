@@ -23,9 +23,9 @@ def JUVWIZARD(filetype='main'):
                               "              ", "Cancel", "Install"):
         filetype = filetype.lower()
         if filetype == 'main':
-            addonfolder = xbmc.translatePath('special://home')
+            addonfolder = kodi.translate_path('special://home')
         elif filetype == 'addon':
-            addonfolder = xbmc.translatePath(os.path.join('special://home', 'addons'))
+            addonfolder = kodi.translate_path(os.path.join('special://home', 'addons'))
         else:
             print({'filetype': filetype})
             dialog.ok("Error!", 'filetype: "%s"' % str(filetype))
@@ -36,7 +36,7 @@ def JUVWIZARD(filetype='main'):
             print(link)
             dialog.ok("Error!", link)
             return
-        path = xbmc.translatePath(os.path.join('special://home', 'addons', 'packages'))
+        path = kodi.translate_path(os.path.join('special://home', 'addons', 'packages'))
         lib = os.path.join(path, 'rejuv.zip')
         try:
             os.remove(lib)

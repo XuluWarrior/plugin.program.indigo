@@ -2,24 +2,27 @@ import os
 import shutil
 import re
 
-import xbmc
+import xbmc, xbmcvfs
 from libs import kodi
 
 AddonID = kodi.addon.getAddonInfo('id')
 AddonTitle = kodi.addon.getAddonInfo('name')
 
+def translate_path(path):
+    return xbmcvfs.translatePath(path) if sys.version_info >= (3,0,0) else xbmc.translatePath(path)
+	
 
 def startup_freshstart():
-    if kodi.yesno_dialog("Please confirm that you wish to factory restore your configuration.",
-                        "                This will result in the loss of all your current data!",
-                        ' ', AddonTitle, nolabel='No', yeslabel='Yes'):
-        home_path = xbmc.translatePath(os.path.join('special://home'))
+    if kodi.yesno_dialog("Please confirm that you wish to factory restore your configuration.\n"+\
+                        "                This will result in the loss of all your current data!\n"+\
+                        ' ', nolabel='No', yeslabel='Yes'):
+        home_path = translate_path(os.path.join('special://home'))
         enableBG16 = "UseCustomBackground,false"
         enableBG17 = "use_custom_bg,false"
         xEB('Skin.SetBool(%s)' % enableBG16)
         xEB('Skin.SetBool(%s)' % enableBG17)
         try:
-            win_string = xbmc.translatePath(os.path.join('special://xbmc/')).split('\\')[-2]
+            win_string = translate_path(os.path.join('special://xbmc/')).split('\\')[-2]
             win_string = win_string.split('_')
             win_string = win_string[0] + '_' + win_string[-1]
             kodi.log(win_string)
@@ -33,8 +36,8 @@ def startup_freshstart():
         #  Directories and sub directories Directories to ignore and leave intact
         sub_dir_exclude = ['metadata.album.universal', 'metadata.artists.universal', 'service.xbmc.versioncheck',
                            'metadata.common.musicbrainz.org', 'metadata.common.imdb.com']
-        if kodi.yesno_dialog(AddonTitle, "Do you wish to keep %s installed for convenience after the factory restore?"
-                            % AddonTitle, '', nolabel='No', yeslabel='Yes'):
+        if kodi.yesno_dialog(AddonTitle+ "\nDo you wish to keep %s installed for convenience after the factory restore?"
+                            % AddonTitle, nolabel='No', yeslabel='Yes'):
             sub_dir_exclude.extend([AddonID])
         # Files to ignore and not to be removed
         file_exclude = ('kodi.log')  # , 'Textures13.db', 'commoncache.db', 'Addons26.db', 'Addons27.db')
