@@ -49,7 +49,7 @@ def scriptblock_checks():
             kodi.log('Checking for Malicious scripts')
 
             addonPath = xbmcaddon.Addon(id=addon_id).getAddonInfo('path')
-            addonPath = kodi.translate_path(addonPath)
+            addonPath = xbmc.translatePath(addonPath)
             xbmcPath = os.path.join(addonPath, "..", "..")
             xbmcPath = os.path.abspath(xbmcPath);
 
@@ -66,7 +66,7 @@ def scriptblock_checks():
 
 def clear_cache():
     kodi.log('STARTUP CLEAR CACHE ACTIVATED')
-    xbmc_cache_path = os.path.join(kodi.translate_path('special://home'), 'cache')
+    xbmc_cache_path = os.path.join(xbmc.translatePath('special://home'), 'cache')
     if os.path.exists(xbmc_cache_path) == True:
         for root, dirs, files in os.walk(xbmc_cache_path):
             file_count = 0
@@ -88,7 +88,7 @@ def clear_cache():
 
 def purge_packages():
     kodi.log('STARTUP PURGE PACKAGES ACTIVATED')
-    packages_path = kodi.translate_path(os.path.join('special://home/addons/packages', ''))
+    packages_path = xbmc.translatePath(os.path.join('special://home/addons/packages', ''))
     try:
         for root, dirs, files in os.walk(packages_path, topdown=False):
             for name in files:

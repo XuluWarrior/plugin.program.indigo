@@ -7,8 +7,8 @@ import xbmcaddon
 from libs import kodi
 
 addon_id = kodi.addon_id
-db_dir = kodi.translate_path("special://profile/Database")
-db_path = os.path.join(db_dir, 'Addons33.db')
+db_dir = xbmc.translatePath("special://profile/Database")
+db_path = os.path.join(db_dir, 'Addons27.db')
 
 conn = db_lib.connect(db_path)
 conn.text_factory = str
@@ -31,7 +31,7 @@ def set_enabled(newaddon):
 
 def setall_enable():
     if kodi.get_kversion() > 16.5:
-        addonfolder = kodi.translate_path(os.path.join('special://home', 'addons'))
+        addonfolder = xbmc.translatePath(os.path.join('special://home', 'addons'))
         contents = os.listdir(addonfolder)
         kodi.log(contents)
         conn.executemany('update installed set enabled=1 WHERE addonID = (?)', ((val,) for val in contents))

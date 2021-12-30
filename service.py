@@ -20,24 +20,24 @@ from libs import kodi
 
 addon_id = kodi.addon_id
 AddonTitle = kodi.addon.getAddonInfo('name')
-addonspath = os.path.abspath(kodi.translate_path('special://home')) + '/addons/'
-packages_path = kodi.translate_path(os.path.join('special://home', 'addons', 'packages'))
-datapath = os.path.abspath(kodi.translate_path('special://home')) + '/userdata/addon_data/'
-artwork = kodi.translate_path(os.path.join('special://home', 'addons', addon_id, 'art/'))
+addonspath = os.path.abspath(xbmc.translatePath('special://home')) + '/addons/'
+packages_path = xbmc.translatePath(os.path.join('special://home', 'addons', 'packages'))
+datapath = os.path.abspath(xbmc.translatePath('special://home')) + '/userdata/addon_data/'
+artwork = xbmc.translatePath(os.path.join('special://home', 'addons', addon_id, 'art/'))
 BlocksUrl = 'https://indigo.tvaddons.co/blocker/blocker.txt'
 script_url = 'https://github.com/tvaddonsco/tva-release-repo/raw/master/plugin.program.indigo/'
-db_dir = kodi.translate_path("special://profile/Database")
+db_dir = xbmc.translatePath("special://profile/Database")
 db_path = os.path.join(db_dir, 'Addons27.db')
-run_once_path = kodi.translate_path(os.path.join('special://home', 'addons', addon_id, 'resources', 'run_once.py'))
+run_once_path = xbmc.translatePath(os.path.join('special://home', 'addons', addon_id, 'resources', 'run_once.py'))
 settings = xbmcaddon.Addon(id=addon_id)
 kodi.log('STARTING ' + AddonTitle + ' SERVICE')
 
-oldinstaller = kodi.translate_path(os.path.join('special://home', 'addons', 'plugin.program.addoninstaller'))
-oldnotify = kodi.translate_path(os.path.join('special://home', 'addons', 'plugin.program.xbmchub.notifications'))
-oldmain = kodi.translate_path(os.path.join('special://home', 'addons', 'plugin.video.xbmchubmaintool'))
-oldwiz = kodi.translate_path(os.path.join('special://home', 'addons', 'plugin.video.hubwizard'))
-oldfresh = kodi.translate_path(os.path.join('special://home', 'addons', 'plugin.video.freshstart'))
-oldmain2 = kodi.translate_path(os.path.join('special://home', 'addons', 'plugin.video.hubmaintool'))
+oldinstaller = xbmc.translatePath(os.path.join('special://home', 'addons', 'plugin.program.addoninstaller'))
+oldnotify = xbmc.translatePath(os.path.join('special://home', 'addons', 'plugin.program.xbmchub.notifications'))
+oldmain = xbmc.translatePath(os.path.join('special://home', 'addons', 'plugin.video.xbmchubmaintool'))
+oldwiz = xbmc.translatePath(os.path.join('special://home', 'addons', 'plugin.video.hubwizard'))
+oldfresh = xbmc.translatePath(os.path.join('special://home', 'addons', 'plugin.video.freshstart'))
+oldmain2 = xbmc.translatePath(os.path.join('special://home', 'addons', 'plugin.video.hubmaintool'))
 
 
 def blocker(binit_time):

@@ -18,12 +18,11 @@ __all__ = ['extract_stack', 'extract_tb', 'format_exception',
 def _print(file, str='', terminator='\n'):
     # file.write(str+terminator)
     # override message level to force logging when addon logging turned on
-    level = xbmc.LOGINFO if sys.version_info >= (3,0,0) else xbmc.LOGNOTICE
     try:
-        xbmc.log('%s: \t\t\t%s' % (addonName + ' NOTICE', str), level)
+        xbmc.log('%s: \t\t\t%s' % (addonName + ' NOTICE', str), xbmc.LOGNOTICE)
     except:
         try:
-            xbmc.log('Logging Failure', level)
+            xbmc.log('Logging Failure', xbmc.LOGNOTICE)
         except:
             pass  # just give up
 

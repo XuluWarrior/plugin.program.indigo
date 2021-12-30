@@ -12,10 +12,10 @@ AddonTitle = "Rejuvinate Kodi"
 
 def startup_rejuv():
     if kodi.yesno_dialog("Please confirm that you wish you wipe clean your current configuration"
-                        "and reconfigure Kodi with the latest Config Wizard update!\n"+\
-                        "        This will result in the loss of all your current data!",heading=AddonTitle):
+                        "and reconfigure Kodi with the latest Config Wizard update!",
+                        "        This will result in the loss of all your current data!", '',AddonTitle):
         addonPath = kodi.addon.getAddonInfo('path')
-        addonPath = kodi.translate_path(addonPath)
+        addonPath = xbmc.translatePath(addonPath)
         xbmcPath = os.path.join(addonPath, "..", "..")
         xbmcPath = os.path.abspath(xbmcPath)
         # Directories and sub directories not to remove but to sort through
@@ -28,7 +28,7 @@ def startup_rejuv():
         #     sub_dir_exclude.extend([AddonID])
         #  Files to ignore and not to be removed
         file_exclude = ('kodi.log')  # , 'Textures13.db','Addons26.db',  'Addons27.db')
-        db_vers = max(re.findall('Addons\d+.db', str(os.listdir(kodi.translate_path('special://database')))))
+        db_vers = max(re.findall('Addons\d+.db', str(os.listdir(xbmc.translatePath('special://database')))))
         file_exclude += db_vers
         try:
             for (root, dirs, files) in os.walk(xbmcPath, topdown=True):

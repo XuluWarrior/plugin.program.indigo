@@ -26,10 +26,10 @@ try:
 except ImportError:
     from itertools import zip_longest as izip_longest
 
-try:
-    from urllib import urlretrieve as urlretrieve
-except ImportError:
-    from urllib.request import urlretrieve as urlretrieve
+    try:
+        from urllib import urlretrieve as urlretrieve
+    except ImportError:
+        from urllib.request import urlretrieve as urlretrieve
 
 try:
     quote_plus = urllib.quote_plus
@@ -47,19 +47,19 @@ addon_id = kodi.addon_id
 addon = (addon_id, sys.argv)
 settings = xbmcaddon.Addon(id=addon_id)
 ADDON = xbmcaddon.Addon(id=addon_id)
-artPath = kodi.translate_path(os.path.join('special://home', 'addons', addon_id, 'resources', 'art2/'))
-artwork1 = kodi.translate_path(os.path.join('special://home', 'addons', addon_id, 'art/'))
-artwork = kodi.translate_path(os.path.join('special://home', 'addons', addon_id, 'art2/'))
-mainPath = kodi.translate_path(os.path.join('special://home', 'addons', addon_id))
-packages_path = kodi.translate_path(os.path.join('special://home', 'addons', 'packages'))
-addon_folder = kodi.translate_path(os.path.join('special://', 'home', 'addons'))
-fanart = kodi.translate_path(os.path.join(mainPath, 'fanart.jpg'))
-iconart = kodi.translate_path(os.path.join(mainPath, 'icon.png'))
+artPath = xbmc.translatePath(os.path.join('special://home', 'addons', addon_id, 'resources', 'art2/'))
+artwork1 = xbmc.translatePath(os.path.join('special://home', 'addons', addon_id, 'art/'))
+artwork = xbmc.translatePath(os.path.join('special://home', 'addons', addon_id, 'art2/'))
+mainPath = xbmc.translatePath(os.path.join('special://home', 'addons', addon_id))
+packages_path = xbmc.translatePath(os.path.join('special://home', 'addons', 'packages'))
+addon_folder = xbmc.translatePath(os.path.join('special://', 'home', 'addons'))
+fanart = xbmc.translatePath(os.path.join(mainPath, 'fanart.jpg'))
+iconart = xbmc.translatePath(os.path.join(mainPath, 'icon.png'))
 dialog = xbmcgui.Dialog()
 # <<<<<<<<<Common Variables>>>>>>>>>>>>>>>
 # Keymaps_URL = base64.b64decode("aHR0cDovL2luZGlnby50dmFkZG9ucy4va2V5bWFwcy9jdXN0b21rZXlzLnR4dA==")
 Keymaps_URL = 'http://indigo.tvaddons.co/keymaps/customkeys.txt'
-KEYBOARD_FILE = kodi.translate_path(os.path.join('special://home/userdata/keymaps/', 'keyboard.xml'))
+KEYBOARD_FILE = xbmc.translatePath(os.path.join('special://home/userdata/keymaps/', 'keyboard.xml'))
 openSub = "https://github.com/tvaddonsco/tva-release-repo/raw/master/service.subtitles.opensubtitles_by_opensubtitles/"
 burst_url = "http://burst.surge.sh/release/script.quasar.burst-0.5.8.zip"
 # tvpath = "https://oldgit.com/tvaresolvers/tva-common-repository/raw/master/zips/"
@@ -68,6 +68,7 @@ tva_repo = 'https://github.com/tvaddonsco/tva-release-repo/tree/master/'
 kodi_url = "http://mirrors.kodi.tv/addons/" + kodi.get_codename().lower() + '/'
 api = aiapi
 CMi = []
+
 
 # ****************************************************************
 def get_params():
@@ -212,7 +213,7 @@ def github_main():
             else:
                 xbmc.executebuiltin("XBMC.RunPlugin(plugin://plugin.git.browser)")
         else:
-            xbmc.executebuiltin("Container.Update(plugin://plugin.git.browser)")
+            xbmc.executebuiltin("XBMC.Container.Update(plugin://plugin.git.browser)")
     except Exception as e:
         kodi.log(str(e))
         traceback.print_exc(file=sys.stdout)
@@ -488,7 +489,7 @@ def hub_install(script, script_url, silent=False, dp=None):
     kodi.log("Looking for : " + newest_v_url)
     if not silent:
         dp = xbmcgui.DialogProgress()
-        dp.create("Starting up", "Initializing\nPlease Stand By....")
+        dp.create("Starting up", "Initializing ", '', 'Please Stand By....')
     lib = os.path.join(packages_path, script + version + '.zip')
     os.remove(lib) if os.path.exists(lib) else ''
     downloader.download(newest_v_url, lib, dp, timeout=120)
@@ -502,19 +503,18 @@ def hub_install(script, script_url, silent=False, dp=None):
 
 # ****************************************************************
 def open_sub_install(url):
-    path = kodi.translate_path(os.path.join('special://home', 'addons', 'packages'))
+    path = xbmc.translatePath(os.path.join('special://home', 'addons', 'packages'))
     dp = xbmcgui.DialogProgress()
-    dp.create("Please Wait", 'Installing Official OpenSubtitles Addon')
+    dp.create("Please Wait", " ", '', 'Installing Official OpenSubtitles Addon')
     lib = os.path.join(path, 'opensubtitlesOfficial.zip')
     try:
         os.remove(lib)
     except OSError:
         pass
     page = kodi.open_url(url)
-    xbmc.log('@#@contentcontentcontent: %s' % str(url), xbmc.LOGINFO) 
     url += re.search('''title="([^z]*zip)''', page).group(1)
     downloader.download(url, lib, dp, timeout=120)
-    addonfolder = kodi.translate_path(os.path.join('special://', 'home', 'addons'))
+    addonfolder = xbmc.translatePath(os.path.join('special://', 'home', 'addons'))
     time.sleep(2)
     try:
         extract.extract_all(lib, addonfolder, '')
@@ -611,10 +611,10 @@ def install_keymap(name, url):
         except OSError:
             pass
     # Check is the packages folder exists, if not create it.
-    path = kodi.translate_path(os.path.join('special://home/addons', 'packages'))
+    path = xbmc.translatePath(os.path.join('special://home/addons', 'packages'))
     if not os.path.exists(path):
         os.makedirs(path)
-    path_key = kodi.translate_path(os.path.join('special://home/userdata', 'keymaps'))
+    path_key = xbmc.translatePath(os.path.join('special://home/userdata', 'keymaps'))
     if not os.path.exists(path_key):
         os.makedirs(path_key)
     buildname = name
@@ -629,7 +629,7 @@ def install_keymap(name, url):
         pass
 
     downloader.download(url, lib, dp, timeout=120)
-    addonfolder = kodi.translate_path(os.path.join('special://', 'home'))
+    addonfolder = xbmc.translatePath(os.path.join('special://', 'home'))
     time.sleep(2)
     dp.update(0, "", "Installing Please wait..", "")
     try:
@@ -674,7 +674,7 @@ def libinstaller(name, url=None):
             sys.exit(1)
         else:
             name = "librtmp.so"
-            path = kodi.translate_path(os.path.join('special://home', ''))
+            path = xbmc.translatePath(os.path.join('special://home', ''))
             make_lib(path, name, url)
 
     if "Windows" in name:
@@ -685,7 +685,7 @@ def libinstaller(name, url=None):
             return
         else:
             name = "librtmp.dll"
-            path = kodi.translate_path(os.path.join('special://home', ''))
+            path = xbmc.translatePath(os.path.join('special://home', ''))
             make_lib(path, name, url)
 
     if "Linux" in name:
@@ -696,7 +696,7 @@ def libinstaller(name, url=None):
             return
         else:
             name = "librtmp.so.1"
-            path = kodi.translate_path(os.path.join('special://home', ''))
+            path = xbmc.translatePath(os.path.join('special://home', ''))
             make_lib(path, name, url)
 
     if "OSX" in name:
@@ -707,7 +707,7 @@ def libinstaller(name, url=None):
             return
         else:
             name = "librtmp.1.dylib"
-            path = kodi.translate_path(os.path.join('special://home', ''))
+            path = xbmc.translatePath(os.path.join('special://home', ''))
             make_lib(path, name, url)
 
     if "TV" in name:
@@ -717,7 +717,7 @@ def libinstaller(name, url=None):
             return
         else:
             name = "librtmp.1.dylib"
-            path = kodi.translate_path(os.path.join('special://home', ''))
+            path = xbmc.translatePath(os.path.join('special://home', ''))
             make_lib(path, name, url)
 
     if "iOS" in name:
@@ -727,7 +727,7 @@ def libinstaller(name, url=None):
             return
         else:
             name = "librtmp.1.dylib"
-            path = kodi.translate_path(os.path.join('special://home', ''))
+            path = xbmc.translatePath(os.path.join('special://home', ''))
             make_lib(path, name, url)
 
     if "RPi" in name:
@@ -737,7 +737,7 @@ def libinstaller(name, url=None):
             return
         else:
             name = "librtmp.1.so"
-            path = kodi.translate_path(os.path.join('special://home', ''))
+            path = xbmc.translatePath(os.path.join('special://home', ''))
             make_lib(path, name, url)
 
 
@@ -841,9 +841,9 @@ def get_github(script, dataurl):
 
 
 def depend_install(name, url):
-    path = kodi.translate_path(os.path.join('special://home', 'addons', 'packages'))
+    path = xbmc.translatePath(os.path.join('special://home', 'addons', 'packages'))
     lib = os.path.join(path, name + '.zip')
-    addonfolder = kodi.translate_path(os.path.join('special://', 'home', 'addons'))
+    addonfolder = xbmc.translatePath(os.path.join('special://', 'home', 'addons'))
     try:
         os.remove(lib)
     except OSError:
@@ -867,7 +867,7 @@ def addon_install(name, url, repourl):
     except Exception as e:
         kodi.log(str(e))
         traceback.print_exc(file=sys.stdout)
-    path = kodi.translate_path(os.path.join('special://home', 'addons', 'packages'))
+    path = xbmc.translatePath(os.path.join('special://home', 'addons', 'packages'))
     if xbmcgui.Dialog().yesno("Please Confirm", "                Do you wish to install the chosen add-on and",
                               "                        its respective repository if needed?",
                               "                            ", "Cancel", "Install"):
@@ -880,14 +880,14 @@ def addon_install(name, url, repourl):
             os.remove(lib)
         except OSError:
             pass
-        addonfolder = kodi.translate_path(os.path.join('special://', 'home', 'addons'))
+        addonfolder = xbmc.translatePath(os.path.join('special://', 'home', 'addons'))
         download(url, lib, addonfolder, name)
         addon_able.set_enabled(addonname)
         try:
             dataurl = repourl.split("repository", 1)[0]
 
             # Start Addon Depend Search ==================================================================
-            depends = kodi.translate_path(os.path.join('special://home', 'addons', addonname, 'addon.xml'))
+            depends = xbmc.translatePath(os.path.join('special://home', 'addons', addonname, 'addon.xml'))
             source = open(depends, mode='r')
             link = source.read()
             source.close()
@@ -895,7 +895,7 @@ def addon_install(name, url, repourl):
             for requires in dmatch:
                 if 'xbmc.python' not in requires:
                     if 'xbmc.gui' not in requires:
-                        dependspath = kodi.translate_path(os.path.join('special://home/addons', requires))
+                        dependspath = xbmc.translatePath(os.path.join('special://home/addons', requires))
                         if not os.path.exists(dependspath):
                             new_depend(dataurl, requires)
                             deep_depends(dataurl, requires)
@@ -908,7 +908,7 @@ def addon_install(name, url, repourl):
         kodi.log("Installer: Repo is : " + repourl)
         if repourl:
             if 'None' not in repourl:
-                path = kodi.translate_path(os.path.join('special://home/addons', 'packages'))
+                path = xbmc.translatePath(os.path.join('special://home/addons', 'packages'))
                 repo_name = str(repourl.split('/')[-1:]).split('-')[:-1]
                 repo_name = str(repo_name).replace('[', '').replace(']', '').replace('"', '').replace('[', '')\
                     .replace("'", '').replace(".zip", '')
@@ -919,7 +919,7 @@ def addon_install(name, url, repourl):
                     os.remove(lib)
                 except Exception as e:
                     kodi.log(str(e))
-                addonfolder = kodi.translate_path(os.path.join('special://', 'home/addons'))
+                addonfolder = xbmc.translatePath(os.path.join('special://', 'home/addons'))
                 download(repourl, lib, addonfolder, repo_name)
                 kodi.log("REPO TO ENABLE IS  " + repo_name)
                 addon_able.set_enabled(repo_name)
@@ -934,14 +934,14 @@ def addon_install(name, url, repourl):
 
 
 def deep_depends(dataurl, addonname):
-    depends = kodi.translate_path(os.path.join('special://home', 'addons', addonname, 'addon.xml'))
+    depends = xbmc.translatePath(os.path.join('special://home', 'addons', addonname, 'addon.xml'))
     source = open(depends, mode='r')
     link = source.read()
     source.close()
     dmatch = re.compile('import addon="(.+?)"').findall(link)
     for requires in dmatch:
         if 'xbmc.python' not in requires:
-            dependspath = kodi.translate_path(os.path.join('special://home/addons', requires))
+            dependspath = xbmc.translatePath(os.path.join('special://home/addons', requires))
             if not os.path.exists(dependspath):
                 new_depend(dataurl, requires)
 

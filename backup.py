@@ -6,7 +6,7 @@ import traceback
 
 import os
 import sys
-import xbmc, xbmcvfs
+import xbmc
 import xbmcaddon
 import xbmcgui
 # import extract
@@ -19,10 +19,11 @@ addon_id = kodi.addon.getAddonInfo('id')
 selfAddon = xbmcaddon.Addon(id=addon_id)
 
 zip_setting = kodi.get_setting("zip")
-zip_path = kodi.translate_path(os.path.join(zip_setting))
-home_path = kodi.translate_path('special://home/')
+zip_path = xbmc.translatePath(os.path.join(zip_setting))
+home_path = xbmc.translatePath('special://home/')
 logfile_name = xbmc.getInfoLabel('System.FriendlyName').split()[0].lower()
 dialog = xbmcgui.Dialog()
+
 
 def backup_menu():
     kodi.add_item('[COLOR white]Select Backup Location[/COLOR]', 'url', 'display_backup_settings', '',
@@ -53,7 +54,7 @@ def get_keyboard(default="", heading="", hidden=False):
     keyboard = xbmc.Keyboard(default, heading, hidden)
     keyboard.doModal()
     if keyboard.isConfirmed():
-        return str(keyboard.getText()) if sys.version_info >= (3,0,0) else str(keyboard.getText().encode("utf-8"))
+        return str(keyboard.getText().encode("utf-8"))
     return default
 
 
@@ -84,25 +85,25 @@ def backup(b_type):
     title = set_name()
     if not title:
         return
-    destfile = kodi.translate_path(os.path.join(zip_path, str(title) + '.zip'))
+    destfile = xbmc.translatePath(os.path.join(zip_path, str(title) + '.zip'))
     if os.path.exists(destfile):
-        if not dialog.yesno('File Name Already Exists', 'Would You like to Create Another File'+\
-                            '\nOr Overwrite The Existing File?\n', 'Overwrite File', 'Create Another'):
+        if not dialog.yesno('File Name Already Exists', 'Would You like to Create Another File',
+                            'Or Overwrite The Existing File?', '', 'Overwrite File', 'Create Another'):
             os.remove(destfile)
         else:
             title = set_name()
             if not title:
                 return False, 0
-            destfile = kodi.translate_path(os.path.join(zip_path, str(title) + '.zip'))
+            destfile = xbmc.translatePath(os.path.join(zip_path, str(title) + '.zip'))
     try:
         zipobj = zipfile.ZipFile(destfile, 'w', zipfile.ZIP_DEFLATED)  # , allowZip64=True)
     except IOError as e:
-        dialog.ok('ERROR', 'Could Not Use This Location for Backup\nPlease Chose Another Location', str(e))
+        dialog.ok('ERROR', 'Could Not Use This Location for Backup', 'Please Chose Another Location', str(e))
         return
     rootlen = len(home_path)
     for_progress = []
     item = []
-    dp.create(message_header, message1+'\n\n')
+    dp.create(message_header, message1, '', '')
     for base, dirs, files in os.walk(home_path):
         for n_file in files:
             item.append(n_file)
@@ -114,7 +115,7 @@ def backup(b_type):
             try:
                 for_progress.append(file_n)
                 progress = len(for_progress) / float(n_item) * 100
-                dp.update(int(progress), "Archiving.."+ '\n[COLOR blue]%s[/COLOR]' % file_n+'\n')
+                dp.update(int(progress), "Archiving..", '[COLOR blue]%s[/COLOR]' % file_n, '')
                 fp = os.path.join(base, file_n)
                 zipobj.write(fp, fp[rootlen:])
             except Exception as e:
@@ -122,8 +123,8 @@ def backup(b_type):
     zipobj.close()
     dp.close()
     time.sleep(1)
-    dialog.ok("[COLOR gold][B]SUCCESS![/B][/COLOR]", 'Your backup was completed successfully!.\nBackup Location: '+\
-              '\n[COLOR=yellow]' + destfile + '[/COLOR]')
+    dialog.ok("[COLOR gold][B]SUCCESS![/B][/COLOR]", 'Your backup was completed successfully!.', "Backup Location: ",
+              '[COLOR=yellow]' + destfile + '[/COLOR]')
     
 
 # ################  Restore  ####################################
@@ -131,7 +132,7 @@ def restore():
     if zip_path != 'Click Here':
         for zip_file in os.listdir(zip_path):
             if zip_file.endswith(".zip"):
-                url = kodi.translate_path(os.path.join(zip_path, zip_file))
+                url = xbmc.translatePath(os.path.join(zip_path, zip_file))
                 kodi.add_item(zip_file, url, 'read_zip', '', '', '')
 
 
@@ -237,15 +238,15 @@ def wipe_backup_restore():
 def list_back_del():
     for f in os.listdir(zip_path):
         if f.endswith(".zip"):
-            url = kodi.translate_path(os.path.join(zip_path, f))
+            url = xbmc.translatePath(os.path.join(zip_path, f))
             kodi.add_dir(f, url, 'do_del_backup', '')
 
 
 def delete_backup(url):
-               
-    if dialog.yesno(AddonTitle, "[COLOR yellow]" + str(url) + "[/COLOR]\nDo you want to delete this backup?\n"+os.path.basename(url)): 
+    if dialog.yesno(AddonTitle, "[COLOR smokewhite]" + url + "[/COLOR]", "Do you want to delete this backup?",
+                    os.path.basename(url)):
         os.remove(url)
-        dialog.ok(AddonTitle, "[COLOR smokewhite]" + url + "[/COLOR]\nSuccessfully deleted.")
+        dialog.ok(AddonTitle, "[COLOR smokewhite]" + url + "[/COLOR]", "Successfully deleted.")
 
 
 def delete_all_backups():

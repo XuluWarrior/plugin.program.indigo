@@ -48,7 +48,7 @@ def download(url, dest, dp=None, timeout=None, silent=False):
         count = 0
         while True:  # and (end - start < 15):
             if time.time() - start_time > timeout:
-                kodi.message("Slow or no Download available:", 'Files could not be downloaded at this time\n'+\
+                kodi.message("Slow or no Download available:", 'Files could not be downloaded at this time',
                              'Please try again later, Attempting to continue...')
                 break
             chunk = u.read(blockSize)
@@ -71,7 +71,7 @@ def download(url, dest, dp=None, timeout=None, silent=False):
     # except socket.timeout as e:
     except Exception as e:
         # For Python 2.7
-        kodi.message("There was an error: %r" % e, 'Files could not be downloaded at this time\nPlease try again later, Attempting to continue...')
+        kodi.message("There was an error: %r" % e, 'Files could not be downloaded at this time', 'Please try again later, Attempting to continue...')
         return
     # except Exception as e:
     #     kodi.message("There was an error:", str(e),'Please try again later, Attempting to continue...')

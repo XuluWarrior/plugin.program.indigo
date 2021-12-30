@@ -24,7 +24,7 @@ import traceback
 import zipfile
 # import urlparse
 
-import xbmc, xbmcvfs
+import xbmc
 import xbmcaddon
 import xbmcgui
 import xbmcplugin
@@ -74,11 +74,10 @@ progressDialog = xbmcgui.DialogProgress()
 
 windowDialog = xbmcgui.WindowDialog()
 
-artwork = xbmcvfs.translatePath(os.path.join('special://home', 'addons', addon_id, 'art/')) if sys.version_info >= (3,0,0) else xbmc.translatePath(os.path.join('special://home', 'addons', addon_id, 'art/'))
+artwork = xbmc.translatePath(os.path.join('special://home', 'addons', addon_id, 'art/'))
 
 fanart = artwork + 'fanart.jpg'
 
-level = xbmc.LOGINFO if sys.version_info >= (3,0,0) else xbmc.LOGNOTICE 
 
 def get_path():
     return addon.getAddonInfo('path')
@@ -148,24 +147,7 @@ def add_dir(name, url, mode, thumb, cover=None, fan_art=fanart, meta_data=None, 
         playable = 'false' if is_folder else 'true'
     else:
         playable = 'true' if is_playable else 'false'
-        
-        
-    if sys.version_info >= (3,0,0) :
-        list_item=xbmcgui.ListItem(name)
-        list_item.setArt({'icon':thumb})
-        list_item.setArt({'thumbnailImage': thumb})
-    
-    else:
-        list_item=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb) 
-        
-        
-        
-        
-        
-        
-        
-        
-   #@ list_item = xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
+    list_item = xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
     list_item.setProperty('fanart_image', fan_art)
     if meta_data is None:
         list_item.setInfo('video', {'title': list_item.getLabel(), 'plot': description})
@@ -190,19 +172,7 @@ def add_item(name, url, mode, iconimage, fan_art=fanart, description=None):
 
     # dialog.ok('', u)'
 
-   #@@ liz = xbmcgui.ListItem(name, u, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
-    if sys.version_info >= (3,0,0) :
-        liz=xbmcgui.ListItem(name)
-        liz.setArt({'icon':"DefaultFolder.png"})
-        liz.setArt({'thumbnailImage': iconimage})
-    
-    else:
-        liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
-    
-    
-    
-    
-    
+    liz = xbmcgui.ListItem(name, u, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
     liz.setInfo('video', {'title': liz.getLabel(), 'plot': description})
     liz.setProperty("fanart_image", fan_art)
     liz.setArt({'poster': iconimage, 'fanart_image': fan_art, 'banner': 'banner.png'})
@@ -299,8 +269,8 @@ def info_dialog(msg, heading=addonInfo('name'), icon=addon_icon(), time=3000):
         log(str(e))
 
 
-def yesno_dialog(line1, heading=addonInfo('name'), nolabel='', yeslabel=''):
-    return dialog.yesno(heading, line1, nolabel, yeslabel)
+def yesno_dialog(line1, line2, line3, heading=addonInfo('name'), nolabel='', yeslabel=''):
+    return dialog.yesno(heading, line1, line2, line3, nolabel, yeslabel)
 
 
 def ok_dialog(line1, line2, line3, heading=addonInfo('name')):
@@ -365,11 +335,11 @@ def auto_view(content):
     xbmc.executebuiltin("Container.SetViewMode(%s)" % get_setting(view))  # 'default-view'))
 
 
-def log(msg, level=level):
+def log(msg, level=xbmc.LOGNOTICE):
     name = str(AddonTitle) + ' NOTICE'
     # override message level to force logging when addon logging turned on
     # level = xbmc.LOGNOTICE
-    level = xbmc.LOGINFO if sys.version_info >= (3,0,0) else xbmc.LOGNOTICE 
+
     try:
         xbmc.log('%s: %s' % (name, msg), level)
     except Exception as e:
@@ -380,9 +350,8 @@ def log(msg, level=level):
             log(str(e))  # just give up
 
 
-def log_info(msg, level=level):
+def log_info(msg, level=xbmc.LOGNOTICE):
     name = AddonTitle + ' INFORMATION'
-    level = xbmc.LOGINFO if sys.version_info >= (3,0,0) else xbmc.LOGNOTICE 
     # override message level to force logging when addon logging turned on
     # level = xbmc.LOGNOTICE
     try:
@@ -484,8 +453,7 @@ def read_file(path, contents='', headers=''):  # , params=None,  verify_ssl=Fals
 
 
 def translate_path(path):
-	
-    return xbmcvfs.translatePath(path) if sys.version_info >= (3,0,0) else xbmc.translatePath(path).decode('utf-8')
+    return xbmc.translatePath(path).decode('utf-8')
 
 
 def execute_jsonrpc(command):
@@ -591,4 +559,3 @@ def extract_all(_in, _out, dp=None):
             traceback.print_exc(file=sys.stdout)
             ok_dialog(str(e), 'Please try again later', 'Attempting to continue...', "There was an error:")
             return False
-

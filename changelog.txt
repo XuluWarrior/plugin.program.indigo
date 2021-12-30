@@ -1,3 +1,6 @@
+V6.0.00
+- Maintain backwards compatibility
+
 V5.0.00
 - Kodi 19 Python 3 compatibility
 
